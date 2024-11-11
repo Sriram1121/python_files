@@ -1,0 +1,136 @@
+Excel Scenarios
+
+import pandas as pd
+
+# read data by skipping the first 10 lines
+
+def read_file_by_skip_rows(file_path, skip_rows = 10):
+	data = pd.read_excel(file_path, skiprows = skip_rows)
+	return data
+
+df = read_file_by_skip_rows("Book1.excel")
+print(df)
+
+# read only the column headers and write it into a file
+
+def read_and_write_header(input_file_path,output_file_path):
+	headers = pd.read_excel(input_file_path, nrows = 0)
+	header_df = pd.DataFrame(columns=headers.columns)	
+	header_df.to_excel(output_file_path, index = False)
+
+read_and_write_header('Book1.csv',output_file_path)
+
+# read multiple worksheets within a excel workbook 
+
+def read_multiple_sheets(file_path,sheet_names=None):
+	sheetts_data = pd.read_excel(file_path,sheet_name=sheet_names)
+	return sheets_data
+all_sheets_data  = read_multiple_sheets('Book1.csv')
+specifice_sheet_data = read_multiple_sheets('Book1.csv',sheet_names=["sheet1","sheet2"])
+
+# find gaps in columns in excel file
+
+def finding_column_gaps(input_file_path,output_file_path):
+	df = pd.read_excel(input_file_path)
+	gaps_data = []
+	for column in df.columns:
+		missing_indices = df[df[column].isna()].index.tolist()
+		if missing_indices:
+			for index in missing_indices:
+				gaps_data.append({'Column':column,'Row':index+1})
+	gaps_df = pd.DataFrame(gaps_data,columns = ['Column','Row']
+	
+	gaps = finding_column_gaps("Book1.xlsx")
+	gaps_df.to_excel(output_file_path,index = False)
+finding_column_gaps("Book1.xlsx","Book2.xlsx")
+
+
+# Search for a particular word or pattern in an excel sheet
+
+import re
+def read_specific_pattern(excel_file,pattern):
+	workbook = pd.read_excel(excel_file,sheet_name=None)
+	matches = []
+	for sheet_name,df in workbook.items():
+		for row_idx, row in df.iterrows():
+			for col_idx, cell_value in row.items():
+				if pd.notna(cell_value) and re.search(pattern, str(cell_value), re.IGNORECASE):
+					matches.append({'Sheet':sheet_name,'Row':row_idx+1,'Column':col_idx,'Value',cell_value})
+	return matches
+
+results = read_specific_pattern("Book.xlsx",'Ram')
+
+# read data from excel file and write into a separate excel file with only selected columns
+
+def filter_columns(input_file_path,output_file_path,selected_columns):
+	df = pd.read_excel(input_file_path)
+	filtered_df = df[selected_columns]
+	df1 = filtered_df.to_excel(output_file_path, idex = False)
+	return df1
+filter_columns("Book1.xlsx","Book2.xlsx",["Name","Age"])
+
+
+# read data from excel and write it into csv file
+
+def csv_to_excel(csv_file_path,sheet_name,excel_file_path):
+	df = pd.read_excel(csv_file_path)
+	df1 = df.to_csv(csv_file_path,index = False )
+	return df1
+
+csv_to_excel('Book2.csv','Book1.xlsx')
+
+# read data from excel file and write into a separate excel file with only selected columns
+
+def read_excel(input_file,output_file,columns):
+	pd.read_excel(input_file)
+	df = df[columns]
+	dF1 = pd.to_excel(output_file)
+	return df1
+read_excel("Book1.xlsx","Book2.xlsx",['NAme','Age'])
+
+	
+
+#joins
+
+import pandas
+import os
+def join_excel_files(directory_path,join_columns,join_type='inner',output_file='joined_output.xlsx')
+    dataframes = []
+    for filename in os.listdir(directory_path):
+        if filename.endswith(".xlsx"):
+            file_path = os.path.join(directory_path,filename)
+            df = pd.read_excel(file_path)
+            dataframes.append(df)
+    joined_df = dataframes[0]
+    for df in dataframes[1:]:
+        joined_df = joined_df.merge(df, on = join_columns,how = join_type)
+        joined_df.to_excel(output_file, index = False)
+    return joined_df
+
+join_columns = ['department','salary']
+join_type = 'left'
+output_file = "left_join.excel"
+joined_df = join_excel_files("C:\\Users\\2173983\\OneDrive - Cognizant\\Desktop\\Pandas",join_columns,join_type,output_file)
+
+
+
+
+
+
+
+
+	
+
+
+	
+
+
+
+
+
+
+
+
+
+	
+
