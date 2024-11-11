@@ -1,0 +1,145 @@
+CSV BASED SCENARIOS
+
+import pandas as pd
+import os
+# convert excel to csv file
+
+def excel_to_csv(excel_file_path,sheet_name,csv_file_path):
+	df = pd.read_excel(excel_file_path,sheet_name = sheet_name)
+	df1 = df.to_csv(csv_file_path, index = False)
+	return df1
+
+excel_to_csv('Book1.xlsx','sheet1','Book2.csv')	
+
+# read data from csv and write it into excel file
+
+def csv_to_excel(csv_file_path,sheet_name,excel_file_path):
+	df = pd.read_csv(csv_file_path)
+	df1 = df.to_excel(csv_file_path, sheet_name = sheet_name,index = False )
+	return df1
+
+csv_to_excel('Book1.xlsx','sheet1','Book2.csv')
+
+#read selected columns from a csv file
+
+def read_selected_columns(csv_file_path, columns):
+	df = pd.read_csv(csv_file_path, usecols= columns)
+	return df
+selected_columns = ['Name','Age']
+read_selected_columns(Book1.csv,selected_columns)
+
+# search for columns containing particular pattern
+
+def read_specific_pattern(csv_file,pattern):
+	df = pd.read_csv(csv_file)
+	column = [col for col in df.columns if pattern in col]
+	return column
+read_specific_pattern('data.csv','Duration')
+
+# replace null value in csv file
+
+def replace_null_values(csv_file,repalcement_char):
+	df = pd.read_csv(csv_file)
+	df1 = df.fillna(replacement_char, inplace = True)
+	return df1
+replace_null_values('Book1.csv','-')
+
+# read multiple files from a directory and combine data from files with same structure into one file
+
+def read_files_from_directory(directory,file_extension):
+	files = [os.path.join(directory,file) for file in os.listdir(directory) if file.endswith(file_extension)]
+	return files
+def combine_files(files):
+	combined_df = pd.DataFrame()
+	for file in files:
+		df = pd.read_csv(file)
+		if combined_df.empty or list(combined_df.columns) == list(df.columns):
+			combined_df = pd.concat([combined_df,df], ignore_index = True)
+	return combined_df
+
+def save_combined_files(df,output_file):
+    df1 = df.to_csv(output_file, index = False)
+
+
+def main(directory,output_file,file_extension = ".csv"):
+	files = read_files_from_directory(directory,file_extension)
+	combined_df = combine_files(files)
+	save_combined_files(combined_df,output_file)
+
+main("C:\Users\2173983\OneDrive - Cognizant\Desktop\Pandas","C:\Users\2173983\OneDrive - Cognizant\Desktop\Pandas\combined.csv")
+
+# read multiple files from a directory and combine data by selecting a certain list of columns (UNION function on certain columns)
+
+def read_files_from_directory(directory,file_extension):
+	files = [os.path.join(directory,file) for file in os.listdir(directory) if file.endswith(file_extension)]
+	return files
+def combine_files(files):
+	combined_df = pd.DataFrame()
+	for file in files:
+		df = pd.read_csv(file)
+		if combined_df.empty or list(combined_df.columns) == list(df.columns):
+			combined_df = pd.concat([combined_df,df], ignore_index = True)
+	return combined_df
+
+def save_combined_files(df,output_file):
+    df1 = df.to_csv(output_file, index = False)
+
+
+def main(directory,output_file,file_extension = ".csv"):
+	files = read_files_from_directory(directory,file_extension)
+	combined_df = combine_files(files)
+	save_combined_files(combined_df,output_file)
+
+# analytical functions
+
+import pandas as pd
+def sum_column(file_path,column_name):
+    df = pd.read_csv(file_path)
+    return df[column_name].sum()
+def sum_column_over_partition(file_path,column_name,partition_column):
+    df = pd.read_csv(file_path)
+    df['partition_sum'] = df.groupby(partition_column)[column_name].tranform('sum')
+    return df
+def find_max_min(file_path,column_name):
+    df = pd.read_csv(column_name)
+    max_val = df[column_name].max()
+    min_val = df[column_name].min()
+    return max_val,min_val
+def max_min_by_group(file_path,group_column,target_column):
+    df = pd.read_csv(file_path)
+    max_in_group = df.groupby(group_column)[target_column].max().reset_index(name = 'max_value')
+    min_in_group = df.groupby(group_column)[target_column].min().reset_index(name = 'min_value')
+    return max_in_group,min_in_group
+
+file_path = "C:\\Users\\2173983\\OneDrive - Cognizant\\Desktop\\Pandas\\Book5.csv"
+column_name = 'salary'
+partition_column = 'department'
+group_column = 'department'
+target_column = 'salary'
+
+total_sum = sum_column(file_path,column_name)
+partition_sum_df = sum_column_over_partition(file_path,column_name,partition_column)
+max_value,min_value = find_max_min(file_path,column_name)
+max_in_group,min_in_group =  max_min_by_group(file_path,group_column,target_column)
+
+#joins
+
+import pandas
+import os
+def join_csv_files(directory_path,join_columns,join_type='inner',output_file='joined_output.csv')
+    dataframes = []
+    for filename in os.listdir(directory_path):
+        if filename.endswith(".csv"):
+            file_path = os.path.join(directory_path,filename)
+            df = pd.read_csv(file_path)
+            dataframes.append(df)
+    joined_df = dataframes[0]
+    for df in dataframes[1:]:
+        joined_df = joined_df.merge(df, on = join_columns,how = join_type)
+        joined_df.to_csv(output_file, index = False)
+    return joined_df
+
+join_columns = ['department','salary']
+join_type = 'left'
+output_file = "left_join.csv"
+joined_df = join_csv_files("C:\\Users\\2173983\\OneDrive - Cognizant\\Desktop\\Pandas",join_columns,join_type,output_file)
